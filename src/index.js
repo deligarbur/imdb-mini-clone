@@ -11,42 +11,37 @@ server.use(cors());
 server.use(express.json({ limit: '25mb' }));
 server.set('view engine', 'ejs');
 
-//esa será la función que nos conecta con la db
+// esa será la función que nos conecta con la db
 const dbConnect = require('../config/connection');
 dbConnect();
 
-//Endpoints
-server.get('/movies', async (req, res) => {
-	//query params
-	const genreFilterParam = req.query.genre;
-	const sortFilterParam = req.query.sort;
-	console.log(genreFilterParam);
-	console.log(sortFilterParam);
-	//sql -> SELECT
-	let data;
-	if (genreFilterParam === '' && sortFilterParam === 'asc') {
-		const selectMovies = 'SELECT * FROM movies ORDER BY title ASC;';
-		const [results] = await conn.query(selectMovies);
-		data = results;
-	} else if (genreFilterParam === '' && sortFilterParam === 'desc') {
-		const selectMovies = 'SELECT * FROM movies ORDER BY title = ?;';
-		const [results] = await conn.query(selectMovies, [sortFilterParam]);
-		data = results;
-	} else if (genreFilterParam !== '' && sortFilterParam === 'asc') {
-		const selectMovies =
-			'SELECT * FROM movies WHERE genre = ? ORDER BY title ASC;';
-		const [results] = await conn.query(selectMovies, [genreFilterParam]);
-		data = results;
-	} else if (genreFilterParam !== '' && sortFilterParam === 'desc') {
-		const selectMovies =
-			'SELECT * FROM movies WHERE genre = ? ORDER BY title DESC;';
-		const [results] = await conn.query(selectMovies, [genreFilterParam]);
-		data = results;
-	}
+// modelo
+const Movie = require('../models/movies');
 
-	//respondo con los datos
-	res.json({ success: true, movies: data });
-	await conn.end();
+// endpoints
+server.get('/movies', async (req, res) => {
+	try {
+		//query params
+		const sortFilterParam = req.query.sort;
+		console.log(sortFilterParam);
+		//const genreFilterParam = req.query.genre;
+		//console.log(genreFilterParam);
+
+		let data;
+		let sortObject = {}; // Declaración de un objeto de ordenación
+		if (sortFilterParam === 'asc') {
+			sortObject = { title: 1 }; // Ordenar ascendentemente por título
+		} else if (sortFilterParam === 'desc') {
+			sortObject = { title: -1 }; // Ordenar descendentemente por título
+		}
+
+		data = await Movie.find({}).sort(sortObject); // Realiza la consulta
+
+		res.json({ success: true, data: data });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send('Error al obtener la lista de películas.');
+	}
 });
 
 server.get('/movie/:movieId', async (req, res) => {

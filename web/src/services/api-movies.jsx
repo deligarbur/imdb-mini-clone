@@ -1,14 +1,25 @@
 // login
-
-const getMoviesFromApi = ({ genre, sort }) => {
-  console.log('Se están pidiendo las películas de la app');
-  // CAMBIA ESTE FETCH PARA QUE APUNTE A UN ENDPOINT DE TU SERVIDOR, PIENSA SI DEBE SER GET O POST, PIENSA QUÉ DATOS DEBES ENVIAR, ETC
-  return fetch(`http://localhost:4000/movies?genre=${genre}&sort=${sort}`)
-    .then(response => response.json())
-    .then((data) => {
-      // CAMBIA EL CONTENIDO DE ESTE THEN PARA GESTIONAR LA RESPUESTA DEL SERVIDOR Y RETORNAR AL COMPONENTE APP LO QUE NECESITA
-      return data;
-    });
+const getMoviesFromApi = ( { sort } ) => {
+  console.log( 'Se están pidiendo las películas de la app' );
+  return fetch( `http://localhost:4000/movies?sort=${sort}` )
+    .then( response => {
+      if ( !response.ok ) {
+        throw new Error( 'Network response was not ok' );
+      }
+      return response.json();
+    } )
+    .then( ( data ) => {
+      if ( data.success ) {
+        console.log( data.data );
+        return data.data;
+      } else {
+        console.error( 'Error al cargar las películas' );
+      }
+    } )
+    .catch( error => {
+      console.error( 'Hubo un problema con la solicitud:', error );
+      return [];
+    } );
 };
 
 const objToExport = {

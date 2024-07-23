@@ -1,26 +1,26 @@
 import PropTypes from "prop-types";
 
-const MoviesList = ({ movies }) => {
+const MoviesList = ( { movies } ) => {
   const renderMovieList = () => {
-    return <ul className="cards">{renderMovies()}</ul>;
+    return <ul className="cards">{ renderMovies() }</ul>;
   };
 
   const renderMovies = () => {
-    return movies.map((movie) => {
+    return movies.map( ( movie ) => {
       return (
-        <li key={movie.id} className="card">
-          <a href={`http://localhost:4000/movie/${movie.idMovies}`}>
-          <img
-            className="card__img"
-            src={movie.image}
-            alt={`Carátula de ${movie.title}`}
-          />
-          <h3 className="card__title">{movie.title}</h3>
-          <p className="card__description">Género: {movie.genre}</p>
+        <li key={ movie._id } className="card">
+          <a href={ `http://localhost:4000/movie/${movie.idMovies}` }>
+            <img
+              className="card__img"
+              src={ movie.image }
+              alt={ `Carátula de ${movie.title}` }
+            />
+            <h3 className="card__title">{ movie.title }</h3>
+            <p className="card__description">Género: { movie.genre }</p>
           </a>
         </li>
       );
-    });
+    } );
   };
 
   const renderEmptyList = () => {
